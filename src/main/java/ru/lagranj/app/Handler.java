@@ -6,12 +6,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Handler {
   private static final Map<Long, List<File>> ALL_FILES_IN_DIRECTORY = new HashMap<>();
-  private static final Map<Long, File> DUPLICATES = new HashMap<>();
+  private static final Set<File> DUPLICATES = new HashSet<>();
 
   public static void doAction(String[] args) throws FileCleanerException {
     Checker.checkArguments(args);
@@ -70,7 +72,7 @@ public class Handler {
         for (File currentFile : filesBySize) {
           if (isEqualsFiles(dirFile, currentFile)) {
             Util.warn("Найден дубликат: [" + currentFile.getAbsolutePath() + "] и [" + dirFileName + "]", null);
-            DUPLICATES.put(fileSize, dirFile);
+            DUPLICATES.add(dirFile);
             break;
           }
         }
@@ -89,7 +91,7 @@ public class Handler {
 
   private static void clearDuplicates() throws FileCleanerException {
     if (!DUPLICATES.isEmpty()) {
-      for (File deletingFile : DUPLICATES.values()) {
+      for (File deletingFile : DUPLICATES) {
         try {
           if (!deletingFile.delete()) {
             //Util.error("Ошибка при удалении файла " + deletingFile.getAbsolutePath(), null);
